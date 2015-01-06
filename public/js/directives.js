@@ -46,38 +46,33 @@ app.controller('MyController', function ($scope) {
 //TODO make the child the one with the changing class, not the parent. Because we can have potentially more sticky children
 //and so the stickiness should come from every child
 
-//app.directive('tdStickyParent', function () {
-//    return {
-//        restrict: 'A',
-//        scope: {
-//            //placeholderText: "=",
-//            //onSearch: "&",
-//            //onReset: "&"
-//        },
-//        link: function (scope, element, attrs, ctrl) {
-//            console.log("linking");
-//            element.bind("scroll", function(e) {
-//                //var offsets = search.getBoundingClientRect();
-//
-//                if (this.scrollTop > 147) this.classList.add("fix-search");
-//                else this.classList.remove("fix-search");
-//            });
-//        }
-//    }
-//});
+
 
 app.directive('tdSticky', function () {
+
     return {
         restrict: 'A',
+        scope: {
+           stickyClassName: "@",
+           stickyMargin: "@"
+        },
         link: function (scope, element, attrs, ctrl) {
-            console.log("linking");
-            element.parent().bind("scroll", function(e) {
-                //var offsets = search.getBoundingClientRect();
+            //get the y coordinate of the current element
+            var yCoord = element[0].getBoundingClientRect().top;
+            //get the top margin as a number value. This is required to apply stickiness before the element reaches the top of the page
+            var stickyTopMargin = Number(scope.stickyMargin);
+            //when scrolling the parent apply stickiness to the given element
+            element.parent().bind("scroll", function (e) {
+
                 //this = the parent
-                //TODO figure out how to not hardcode the height at which stickiness should happen
-                //also figure out how to do it with multiple elements
-                if (this.scrollTop > 147) element.addClass("fix-search");
-                else element.removeClass("fix-search");
+                //TODO figure out how to not hard-code the height at which stickiness should happen
+                //TODO figure out how to do it with multiple elements
+
+                var threshold = yCoord - stickyTopMargin;
+                console.log("threshold: " + threshold);
+
+                if (this.scrollTop > threshold) element.addClass(scope.stickyClassName);
+                else element.removeClass(scope.stickyClassName);
             });
         }
     }
